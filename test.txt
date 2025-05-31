@@ -1,0 +1,98 @@
+#!/bin/bash
+
+echo "=== Firefox and GeckoDriver ==="
+which geckodriver >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "GeckoDriver: OK"
+else
+    echo "GeckoDriver: MISSING"
+    read -p "Install geckodriver? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update
+        sudo apt install -y firefox-geckodriver
+    fi
+fi
+
+which firefox >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Firefox: OK"
+else
+    echo "Firefox: MISSING"
+    read -p "Install Firefox? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update
+        sudo apt install -y firefox
+    fi
+fi
+
+echo "=== Java ==="
+java -version && echo "Java: OK" || { echo "Java: MISSING"; exit 1; }
+
+echo "=== Python CI Tools (via pipx) ==="
+pipx list | grep tox >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "tox: OK (via pipx)"
+else
+    echo "tox: MISSING"
+    read -p "Install tox with pipx? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        pipx install tox
+    fi
+fi
+
+pipx list | grep pytest >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "pytest: OK (via pipx)"
+else
+    echo "pytest: MISSING"
+    read -p "Install pytest with pipx? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        pipx install pytest
+    fi
+fi
+
+echo "=== Java CI Tools ==="
+mvn -v >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Maven: OK"
+else
+    echo "Maven: MISSING"
+    read -p "Install Maven? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update && sudo apt install -y maven
+    fi
+fi
+
+gradle -v >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Gradle: OK"
+else
+    echo "Gradle: MISSING"
+    read -p "Install Gradle? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update && sudo apt install -y gradle
+    fi
+fi
+
+ant -version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Ant: OK"
+else
+    echo "Ant: MISSING"
+    read -p "Install Ant? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update && sudo apt install -y ant
+    fi
+fi
+
+echo "=== General Tools ==="
+git --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Git: OK"
+else
+    echo "Git: MISSING"
+    read -p "Install Git? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update && sudo apt install -y git
+    fi
+fi
