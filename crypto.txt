@@ -1,0 +1,131 @@
+#!/bin/bash
+
+echo "=== Solana ==="
+solana --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Solana CLI: OK"
+else
+    echo "Solana CLI: MISSING"
+    read -p "Install Solana CLI? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+        export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+        echo "Solana CLI installed. Please restart your terminal or run 'source ~/.bashrc'."
+    fi
+fi
+
+echo "=== Anchor ==="
+anchor --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Anchor: OK"
+else
+    echo "Anchor: MISSING"
+    read -p "Install Anchor (via AVM)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        cargo install --git https://github.com/coral-xyz/anchor avm --force
+        avm install latest
+        avm use latest
+        echo "Anchor installed via AVM."
+    fi
+fi
+
+echo "=== Sui ==="
+sui --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Sui CLI: OK"
+else
+    echo "Sui CLI: MISSING"
+    read -p "Install Sui CLI? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        # Official install script (as of 2025, adjust if necessary)
+        curl -sSfL https://github.com/MystenLabs/sui/releases/latest/download/sui-ubuntu-x86_64.tgz | tar xz
+        sudo mv sui /usr/local/bin/
+        echo "Sui CLI installed."
+    fi
+fi
+
+echo "=== Ethereum ==="
+node --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Node.js: OK"
+else
+    echo "Node.js: MISSING"
+    read -p "Install Node.js (via NodeSource PPA)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt install -y nodejs
+    fi
+fi
+
+npm --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "npm: OK"
+else
+    echo "npm: MISSING"
+    read -p "Install npm? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo apt update
+        sudo apt install -y npm
+    fi
+fi
+
+npx hardhat --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Hardhat: OK"
+else
+    echo "Hardhat: MISSING"
+    read -p "Install Hardhat (globally with npm)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo npm install -g hardhat
+    fi
+fi
+
+truffle version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Truffle: OK"
+else
+    echo "Truffle: MISSING"
+    read -p "Install Truffle (globally with npm)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        sudo npm install -g truffle
+    fi
+fi
+
+forge --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Foundry (forge): OK"
+else
+    echo "Foundry (forge): MISSING"
+    read -p "Install Foundry (via Foundryup)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        curl -L https://foundry.paradigm.xyz | bash
+        ~/.foundry/bin/foundryup
+        echo 'export PATH="$HOME/.foundry/bin:$PATH"' >> ~/.bashrc
+        export PATH="$HOME/.foundry/bin:$PATH"
+        echo "Foundry installed. Please restart your terminal or run 'source ~/.bashrc'."
+    fi
+fi
+
+echo "=== Rust ==="
+rustc --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Rust: OK"
+else
+    echo "Rust: MISSING"
+    read -p "Install Rust (via rustup)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source $HOME/.cargo/env
+        echo 'source $HOME/.cargo/env' >> ~/.bashrc
+        echo "Rust installed."
+    fi
+fi
+
+cargo --version >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Cargo: OK"
+else
+    echo "Cargo: MISSING"
+    echo "Cargo should be installed with Rust. Please check your Rust installation."
+fi
