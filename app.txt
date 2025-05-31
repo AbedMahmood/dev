@@ -1,0 +1,142 @@
+#!/bin/bash
+
+echo &quot;=== Android ===&quot;
+
+# JDK
+java -version &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;JDK: OK&quot;
+else
+    echo &quot;JDK: MISSING&quot;
+    read -p &quot;Install OpenJDK? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y default-jdk
+    fi
+fi
+
+# ADB
+adb version &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;ADB: OK&quot;
+else
+    echo &quot;ADB: MISSING&quot;
+    read -p &quot;Install Android platform-tools (ADB)? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y android-tools-adb
+    fi
+fi
+
+# SDK Manager
+sdkmanager --version &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;SDK Manager: OK&quot;
+else
+    echo &quot;SDK Manager: MISSING&quot;
+    echo &quot;The SDK Manager is part of Android Command Line Tools.&quot;
+    read -p &quot;Download and set up Android Command Line Tools in ~/android-cmdline-tools? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        mkdir -p ~/android-cmdline-tools
+        cd ~/android-cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        unzip cmdline-tools.zip
+        rm cmdline-tools.zip
+        echo &quot;export PATH=\$PATH:~/android-cmdline-tools/cmdline-tools/bin&quot; &gt;&gt; ~/.bashrc
+        echo &quot;Android Command Line Tools downloaded. Please restart your terminal or run &apos;source ~/.bashrc&apos;.&quot;
+        cd -
+    fi
+fi
+
+# Gradle
+gradle -v &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;Gradle: OK&quot;
+else
+    echo &quot;Gradle: MISSING&quot;
+    read -p &quot;Install Gradle? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y gradle
+    fi
+fi
+
+echo &quot;=== .NET ===&quot;
+dotnet --list-sdks &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;Dotnet SDK: OK&quot;
+else
+    echo &quot;Dotnet SDK: MISSING&quot;
+    read -p &quot;Install .NET SDK? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        rm packages-microsoft-prod.deb
+        sudo apt update
+        sudo apt install -y dotnet-sdk-8.0
+    fi
+fi
+
+echo &quot;=== Python ===&quot;
+python3 --version &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;Python3: OK&quot;
+else
+    echo &quot;Python3: MISSING&quot;
+    read -p &quot;Install Python3? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y python3
+    fi
+fi
+
+pip3 --version &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;pip3: OK&quot;
+else
+    echo &quot;pip3: MISSING&quot;
+    read -p &quot;Install pip3? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y python3-pip
+    fi
+fi
+
+python3 -m venv --help &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;venv: OK&quot;
+else
+    echo &quot;venv: MISSING&quot;
+    read -p &quot;Install python3-venv? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y python3-venv
+    fi
+fi
+
+echo &quot;=== JavaScript / Node.js ===&quot;
+node -v &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;Node.js: OK&quot;
+else
+    echo &quot;Node.js: MISSING&quot;
+    read -p &quot;Install Node.js using NodeSource PPA (recommended)? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        # You can change the version below if you want a different Node version
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt install -y nodejs
+    fi
+fi
+
+npm -v &gt;/dev/null 2&gt;&amp;1
+if [ $? -eq 0 ]; then
+    echo &quot;npm: OK&quot;
+else
+    echo &quot;npm: MISSING&quot;
+    # npm is bundled with nodejs from NodeSource, but if missing:
+    read -p &quot;Install npm? (y/n): &quot; yn
+    if [ &quot;$yn&quot; = &quot;y&quot; ]; then
+        sudo apt update
+        sudo apt install -y npm
+    fi
+fi
