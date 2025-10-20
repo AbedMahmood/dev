@@ -106,7 +106,7 @@ else
     echo "Hardhat: MISSING"
     read -p "Install Hardhat (globally with npm)? (y/n): " yn
     if [ "$yn" = "y" ]; then
-        sudo npm install -g hardhat
+        npm install -g hardhat
     fi
 fi
 
@@ -117,7 +117,7 @@ else
     echo "Truffle: MISSING"
     read -p "Install Truffle (globally with npm)? (y/n): " yn
     if [ "$yn" = "y" ]; then
-        sudo npm install -g truffle
+        npm install -g truffle
     fi
 fi
 
