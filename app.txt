@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXTERNAL_DRIVE="/media/dev/Drive"
+LOCAL_DRIVE="$HOME/DevTools"   # Change this to your desired local storage path
 
 echo "=== Android ==="
 
@@ -30,8 +30,8 @@ else
     fi
 fi
 
-# SDK Manager (on external drive)
-export ANDROID_SDK_ROOT="$EXTERNAL_DRIVE/Android/Sdk"
+# SDK Manager (on local drive)
+export ANDROID_SDK_ROOT="$LOCAL_DRIVE/Android/Sdk"
 export PATH="$PATH:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools"
 
 if command -v sdkmanager >/dev/null 2>&1; then
@@ -39,33 +39,33 @@ if command -v sdkmanager >/dev/null 2>&1; then
 else
     echo "SDK Manager: MISSING"
     echo "The SDK Manager is part of Android Command Line Tools."
-    read -p "Download and set up Android Command Line Tools in $EXTERNAL_DRIVE/android-cmdline-tools? (y/n): " yn
+    read -p "Download and set up Android Command Line Tools in $LOCAL_DRIVE/android-cmdline-tools? (y/n): " yn
     if [ "$yn" = "y" ]; then
-        mkdir -p "$EXTERNAL_DRIVE/android-cmdline-tools"
-        cd "$EXTERNAL_DRIVE/android-cmdline-tools"
+        mkdir -p "$LOCAL_DRIVE/android-cmdline-tools"
+        cd "$LOCAL_DRIVE/android-cmdline-tools"
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         unzip cmdline-tools.zip
         rm cmdline-tools.zip
-        echo "export PATH=\$PATH:$EXTERNAL_DRIVE/android-cmdline-tools/cmdline-tools/bin" >> ~/.bashrc
+        echo "export PATH=\$PATH:$LOCAL_DRIVE/android-cmdline-tools/cmdline-tools/bin" >> ~/.bashrc
         echo "Android Command Line Tools downloaded. Please restart your terminal or run 'source ~/.bashrc'."
         cd -
     fi
 fi
 
-# Gradle (on external drive)
-if [ -x "$EXTERNAL_DRIVE/gradle/bin/gradle" ]; then
-    echo "Gradle: OK (external)"
+# Gradle (on local drive)
+if [ -x "$LOCAL_DRIVE/gradle/bin/gradle" ]; then
+    echo "Gradle: OK (local)"
 else
     echo "Gradle: MISSING"
-    read -p "Download and install Gradle to $EXTERNAL_DRIVE/gradle? (y/n): " yn
+    read -p "Download and install Gradle to $LOCAL_DRIVE/gradle? (y/n): " yn
     if [ "$yn" = "y" ]; then
         GRADLE_VERSION="8.7"
-        cd "$EXTERNAL_DRIVE"
+        cd "$LOCAL_DRIVE"
         wget "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
         unzip "gradle-${GRADLE_VERSION}-bin.zip"
         mv "gradle-${GRADLE_VERSION}" gradle
         rm "gradle-${GRADLE_VERSION}-bin.zip"
-        echo "export PATH=$EXTERNAL_DRIVE/gradle/bin:\$PATH" >> ~/.bashrc
+        echo "export PATH=$LOCAL_DRIVE/gradle/bin:\$PATH" >> ~/.bashrc
         echo "Gradle installed. Please restart your terminal or run 'source ~/.bashrc'."
     fi
 fi
@@ -87,25 +87,25 @@ else
 fi
 
 echo "=== JavaScript / Node.js ==="
-if [ -x "$EXTERNAL_DRIVE/nodejs/bin/node" ]; then
-    echo "Node.js: OK (external)"
+if [ -x "$LOCAL_DRIVE/nodejs/bin/node" ]; then
+    echo "Node.js: OK (local)"
 else
     echo "Node.js: MISSING"
-    read -p "Download and install Node.js to $EXTERNAL_DRIVE/nodejs? (y/n): " yn
+    read -p "Download and install Node.js to $LOCAL_DRIVE/nodejs? (y/n): " yn
     if [ "$yn" = "y" ]; then
         NODE_VERSION="v20.11.1"
-        cd "$EXTERNAL_DRIVE"
+        cd "$LOCAL_DRIVE"
         wget "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz"
         tar -xf "node-${NODE_VERSION}-linux-x64.tar.xz"
         mv "node-${NODE_VERSION}-linux-x64" nodejs
         rm "node-${NODE_VERSION}-linux-x64.tar.xz"
-        echo "export PATH=$EXTERNAL_DRIVE/nodejs/bin:\$PATH" >> ~/.bashrc
+        echo "export PATH=$LOCAL_DRIVE/nodejs/bin:\$PATH" >> ~/.bashrc
         echo "Node.js installed. Please restart your terminal or run 'source ~/.bashrc'."
     fi
 fi
 
-if [ -x "$EXTERNAL_DRIVE/nodejs/bin/npm" ]; then
-    echo "npm: OK (external)"
+if [ -x "$LOCAL_DRIVE/nodejs/bin/npm" ]; then
+    echo "npm: OK (local)"
 else
     echo "npm: MISSING (should be included with Node.js install)"
 fi
