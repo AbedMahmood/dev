@@ -1,23 +1,49 @@
 #!/bin/bash
 
+# Detect shell and assign config file for PATH exports
+if [ -n "$ZSH_VERSION" ]; then
+    shell_config="$HOME/.zshrc"
+else
+    shell_config="$HOME/.bashrc"
+fi
+
 echo "=== Solana ==="
-solana --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+if command -v solana >/dev/null 2>&1; then
     echo "Solana CLI: OK"
 else
     echo "Solana CLI: MISSING"
     read -p "Install Solana CLI? (y/n): " yn
     if [ "$yn" = "y" ]; then
         sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> "$shell_config"
         export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-        echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
-        echo "Solana CLI installed. Please restart your terminal or run 'source ~/.bashrc'."
+        echo "Solana CLI installed. Please restart your terminal or run 'source $shell_config'."
     fi
 fi
 
+echo "=== Rust and Cargo ==="
+if command -v rustc >/dev/null 2>&1; then
+    echo "Rust: OK"
+else
+    echo "Rust: MISSING"
+    read -p "Install Rust (via rustup)? (y/n): " yn
+    if [ "$yn" = "y" ]; then
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        echo 'source $HOME/.cargo/env' >> "$shell_config"
+        source "$HOME/.cargo/env"
+        echo "Rust installed."
+    fi
+fi
+
+if command -v cargo >/dev/null 2>&1; then
+    echo "Cargo: OK"
+else
+    echo "Cargo: MISSING"
+    echo "Cargo should be installed with Rust. Please check your Rust installation."
+fi
+
 echo "=== Anchor ==="
-anchor --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+if command -v anchor >/dev/null 2>&1; then
     echo "Anchor: OK"
 else
     echo "Anchor: MISSING"
@@ -31,14 +57,12 @@ else
 fi
 
 echo "=== Sui ==="
-sui --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+if command -v sui >/dev/null 2>&1; then
     echo "Sui CLI: OK"
 else
     echo "Sui CLI: MISSING"
     read -p "Install Sui CLI? (y/n): " yn
     if [ "$yn" = "y" ]; then
-        # Official install script (as of 2025, adjust if necessary)
         curl -sSfL https://github.com/MystenLabs/sui/releases/latest/download/sui-ubuntu-x86_64.tgz | tar xz
         sudo mv sui /usr/local/bin/
         echo "Sui CLI installed."
@@ -46,8 +70,7 @@ else
 fi
 
 echo "=== Ethereum ==="
-node --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+if command -v node >/dev/null 2>&1; then
     echo "Node.js: OK"
 else
     echo "Node.js: MISSING"
@@ -58,8 +81,14 @@ else
     fi
 fi
 
-npm --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+# Fix for potential npm hanging
+echo "Resetting npm cache and config before installs..."
+npm cache clean --force
+npm config delete proxy
+npm config delete https-proxy
+npm config set registry https://registry.npmjs.org/
+
+if command -v npm >/dev/null 2>&1; then
     echo "npm: OK"
 else
     echo "npm: MISSING"
@@ -70,8 +99,8 @@ else
     fi
 fi
 
-npx hardhat --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+echo "=== Hardhat ==="
+if npx hardhat --version >/dev/null 2>&1; then
     echo "Hardhat: OK"
 else
     echo "Hardhat: MISSING"
@@ -81,8 +110,8 @@ else
     fi
 fi
 
-truffle version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+echo "=== Truffle ==="
+if command -v truffle >/dev/null 2>&1; then
     echo "Truffle: OK"
 else
     echo "Truffle: MISSING"
@@ -92,8 +121,8 @@ else
     fi
 fi
 
-forge --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+echo "=== Foundry (forge) ==="
+if command -v forge >/dev/null 2>&1; then
     echo "Foundry (forge): OK"
 else
     echo "Foundry (forge): MISSING"
@@ -101,31 +130,8 @@ else
     if [ "$yn" = "y" ]; then
         curl -L https://foundry.paradigm.xyz | bash
         ~/.foundry/bin/foundryup
-        echo 'export PATH="$HOME/.foundry/bin:$PATH"' >> ~/.bashrc
+        echo "export PATH=\"$HOME/.foundry/bin:\$PATH\"" >> "$shell_config"
         export PATH="$HOME/.foundry/bin:$PATH"
-        echo "Foundry installed. Please restart your terminal or run 'source ~/.bashrc'."
+        echo "Foundry installed. Please restart your terminal or run 'source $shell_config'."
     fi
-fi
-
-echo "=== Rust ==="
-rustc --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    echo "Rust: OK"
-else
-    echo "Rust: MISSING"
-    read -p "Install Rust (via rustup)? (y/n): " yn
-    if [ "$yn" = "y" ]; then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        source $HOME/.cargo/env
-        echo 'source $HOME/.cargo/env' >> ~/.bashrc
-        echo "Rust installed."
-    fi
-fi
-
-cargo --version >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    echo "Cargo: OK"
-else
-    echo "Cargo: MISSING"
-    echo "Cargo should be installed with Rust. Please check your Rust installation."
 fi
